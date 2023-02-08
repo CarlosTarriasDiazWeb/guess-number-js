@@ -1,23 +1,330 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta name="generator" content="GitLab Pages">
-    <title>Plain HTML site using GitLab Pages</title>
-    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Número secreto</title>
+    <style>
+      main {
+        padding: 0;
+        margin: 0;
+        font-family: "Lato";
+        max-width: 500px;
+        margin: 0 auto;
+      }
+
+      .flex {
+        display: flex;
+      }
+
+      .wrap {
+        flex-wrap: wrap;
+      }
+
+      .center {
+        justify-content: center;
+      }
+      .w20 {
+        width: 20%;
+      }
+      .w90 {
+        width: 90%;
+      }
+      .w100 {
+        width: 100%;
+      }
+
+      .cel {
+        height: 82px;
+        z-index: 1;
+        width: 90%;
+        font-weight: bold;
+        position: relative;
+        margin: 5px auto;
+        background-color: #1aa1f0;
+        border-radius: 10px;
+        text-align: center;
+        justify-content: center;
+        font-size: 2.25em;
+
+        align-items: center;
+      }
+
+      .comprobar,
+      .info {
+        border: 1px solid #1aa1f0;
+        border-radius: 5px;
+        font-size: 1.2em;
+        margin-bottom: 15px;
+        margin-top: 15px;
+      }
+
+      .comprobar *,
+      .info * {
+        margin: 10px;
+      }
+      .info {
+        border-color: crimson;
+        background-color: crimson;
+        color: white;
+      }
+      label {
+        color: #1aa1f0;
+        font-weight: bold;
+      }
+      input {
+        box-sizing: border-box;
+        width: 40%;
+        border: none;
+        margin-bottom: 15px;
+        font-size: 1.2em;
+        padding: 10px;
+        border-bottom: 2px solid #1aa1f0;
+        outline: none;
+        border-radius: 5px 5px 0 0;
+      }
+
+      input:focus,
+      input:hover {
+        background-color: #bababa;
+      }
+
+      button {
+        width: 55%;
+        padding: 15px;
+        background-color: #1aa1f0;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 1.17em;
+        margin-bottom: 10px;
+      }
+
+      button:hover,
+      button:focus {
+        background-color: #1aa1f075;
+        cursor: pointer;
+      }
+
+      .celResult {
+        height: 82px;
+        z-index: 1;
+        width: 90%;
+        font-weight: bold;
+        position: relative;
+        margin: 5px auto;
+        background-color: #bababa;
+        border-radius: 10px;
+        text-align: center;
+        justify-content: center;
+        font-size: 2.25em;
+        align-items: center;
+      }
+
+      .bg-yellow {
+        background-color: rgb(219, 192, 14);
+      }
+
+      .bg-green {
+        background-color: rgb(26, 184, 26);
+      }
+    </style>
   </head>
+
   <body>
-    <div class="navbar">
-      <a href="https://pages.gitlab.io/plain-html/">Plain HTML Example</a>
-      <a href="https://gitlab.com/pages/plain-html/">Repository</a>
-      <a href="https://gitlab.com/pages/">Other Examples</a>
-    </div>
+    <main>
+      <h1>Adivina el número secreto</h1>
+      <section id="codigo" class="flex wrap center">
+        <div class="w100 flex wrap">
+          <div class="w20">
+            <div class="cel flex">*</div>
+          </div>
+          <div class="w20">
+            <div class="cel flex">*</div>
+          </div>
+          <div class="w20">
+            <div class="cel flex">*</div>
+          </div>
+          <div class="w20">
+            <div class="cel flex">*</div>
+          </div>
+          <div class="w20">
+            <div class="cel flex">*</div>
+          </div>
+        </div>
+      </section>
+      <section class="w100 flex wrap center comprobar">
+        <label class="w90" for="numero">Escribe aquí un número</label><br />
+        <input class="w90" type="text" id="numero" name="numero" value="01234" /><br />
+        <button class="w90" id="check">Comprobar</button>
+      </section>
+      <section class="w100 info">
+        <p class="w90" id="info">Primer intento, suerte!</p>
+      </section>
+      <section id="Result" class="flex wrap center">
+        <!-- Esto debereís generarlo más adelante por código -->
+        <!-- <div class="rowResult w100 flex wrap">
+                <div class="w20">
+                    <div class="celResult flex"></div>
+                </div>
+                <div class="w20">
+                    <div class="celResult flex"></div>
+                </div>
+                <div class="w20">
+                    <div class="celResult flex"></div>
+                </div>
+                <div class="w20">
+                    <div class="celResult flex"></div>
+                </div>
+                <div class="w20">
+                    <div class="celResult flex"></div>
+                </div>
+            </div>
+            <div class="rowResult w100 flex wrap">
+                <div class="w20">
+                    <div class="celResult flex"></div>
+                </div>
+                <div class="w20">
+                    <div class="celResult flex"></div>
+                </div>
+                <div class="w20">
+                    <div class="celResult flex"></div>
+                </div>
+                <div class="w20">
+                    <div class="celResult flex"></div>
+                </div>
+                <div class="w20">
+                    <div class="celResult flex"></div>
+                </div>
+            </div> -->
+      </section>
+    </main>
+    <script>
+      let codigo = [];
+      const maxIntento = 8;
+      const numeroCeldas = 5;
+      let intentosUsuario = 0;
 
-    <h1>Hello World!</h1>
+      /*1. Genera una constante CODIGO_SECRETO de tipo array de 5 número aleatorios entre 0 y 9 usando la libreria Math.random();*/
+      function codigoSecreto() {
+        for (let i = 0; i < 5; i++) {
+          codigo[i] = Math.floor(Math.random() * 10);
+        }
+        console.table(codigo);
+      }
 
-    <p>
-      This is a simple plain-HTML website on GitLab Pages, without any fancy static site generator.
-    </p>
+      function comprobar(codigo, intentosUsuario) {
+        //const codigoUsuario = document.getElementById("numero").value.split("").map(el => el = parseInt(el));
+
+        const codigoUsuarioString = document.getElementById("numero").value.trim();
+        console.log(codigoUsuarioString.length);
+        if (
+          codigoUsuarioString.length == 0 ||
+          codigoUsuarioString.length < 5 ||
+          codigoUsuarioString.length > 5
+        )
+          return [intentosUsuario, true];
+
+        const codigoUsuario = codigoUsuarioString.split("").map((el) => (el = parseInt(el)));
+        //console.log(codigoUsuario)
+        const filaIntento = document.getElementById(`f${intentosUsuario}`);
+        const celdasIntento = Array.from(filaIntento.children);
+        let aciertos = 0;
+        //console.log(celdasIntento);
+        for (let i = 0; i < numeroCeldas; i++) {
+          const celda = celdasIntento[i].children[0];
+          celda.innerText = codigoUsuario[i];
+          if (codigo[i] == codigoUsuario[i]) {
+            celda.classList.add("bg-green");
+            aciertos++;
+            console.log("acierto");
+          } else {
+            if (codigo.includes(codigoUsuario[i])) {
+              celda.classList.add("bg-yellow");
+              console.log("incluye");
+            }
+          }
+        }
+
+        if (aciertos < 5) {
+          intentosUsuario++;
+          return [intentosUsuario, false];
+        }
+
+        return [-1, false];
+      }
+
+      codigoSecreto();
+
+      //codigo = [3,4,5,6,7] -> DEBUG
+
+      crearFilasResultado();
+
+      const botonComprobar = document.getElementById("check");
+
+      botonComprobar.addEventListener("click", (evento) => {
+        const mensajes = {
+          1: "segundo",
+          2: "tercer",
+          3: "cuarto",
+          4: "quinto",
+          5: "sexto",
+          6: "séptimo",
+          7: "octavo",
+        };
+        let errorActivado;
+        [intentosUsuario, errorActivado] = comprobar(codigo, intentosUsuario);
+        console.log(intentosUsuario);
+        console.log(errorActivado);
+        if (intentosUsuario === -1) {
+          escribirMensajeSeccionInfo("Enhorabuena, ¡has ganado!");
+          mostrarCodigo();
+        } else if (intentosUsuario === maxIntento) {
+          //Si el usuario ha superado los intentos máximos, mostramos el mensaje de derrota en secion INFO.
+          escribirMensajeSeccionInfo("Vaya, has perdido...");
+          //this.removeEventListener("click")
+        } else if (intentosUsuario >= 0 && intentosUsuario < maxIntento) {
+          escribirMensajeSeccionInfo(`Vas por el ${mensajes[intentosUsuario]} intento.`);
+        } else if (errorActivado) {
+          escribirMensajeSeccionInfo("Error: El numero debe contener 5 dígitos.");
+          console.log("Error");
+        }
+      });
+
+      function escribirMensajeSeccionInfo(mensaje) {
+        const parrafoInfo = document.getElementById("info");
+        parrafoInfo.textContent = mensaje;
+      }
+
+      function mostrarCodigo() {
+        const filaCodigo = document.querySelector("#codigo > div");
+        const celdasCodigo = Array.from(filaCodigo.children);
+        for (let i = 0; i < numeroCeldas; i++) {
+          const celda = celdasCodigo[i].children[0];
+          celda.innerText = codigo[i];
+        }
+      }
+
+      /*Creamos seccion RESULT con tantas filas según marque maxIntentos*/
+
+      function crearFilasResultado() {
+        const seccionResultados = document.getElementById("Result");
+
+        for (let i = 0; i < maxIntento; i++) {
+          let filaResultados = document.createElement("div");
+          filaResultados.classList.add("rowResult", "w100", "flex", "wrap");
+          filaResultados.id = `f${i}`;
+          for (let j = 0; j < numeroCeldas; j++) {
+            let celdaWrapper = document.createElement("div");
+            celdaWrapper.classList.add("w20");
+            let celda = document.createElement("div");
+            celda.classList.add("celResult", "flex");
+            celdaWrapper.appendChild(celda);
+            filaResultados.appendChild(celdaWrapper);
+          }
+          seccionResultados.appendChild(filaResultados);
+        }
+      }
+    </script>
   </body>
 </html>
-
