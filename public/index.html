@@ -137,7 +137,7 @@
       }
 
       .font {
-        font-family: 'Itim', cursive;
+        font-family: "Itim", cursive;
       }
     </style>
   </head>
@@ -166,7 +166,13 @@
       </section>
       <section class="w100 flex wrap center comprobar">
         <label class="w90" for="numero">Escribe aquí un número</label><br />
-        <input class="w90" type="text" id="numero" name="numero" placeholder="Escribe un número de 5 dígitos..." /><br />
+        <input
+          class="w90"
+          type="text"
+          id="numero"
+          name="numero"
+          placeholder="Escribe un número de 5 dígitos..."
+        /><br />
         <button class="w90" id="check">Comprobar</button>
         <button class="w90" id="reset">Reiniciar Juego</button>
       </section>
@@ -174,41 +180,7 @@
         <p class="w90" id="info">Primer intento, suerte!</p>
       </section>
       <section id="Result" class="flex wrap center">
-        <!-- Esto debereís generarlo más adelante por código -->
-        <!-- <div class="rowResult w100 flex wrap">
-                <div class="w20">
-                    <div class="celResult flex"></div>
-                </div>
-                <div class="w20">
-                    <div class="celResult flex"></div>
-                </div>
-                <div class="w20">
-                    <div class="celResult flex"></div>
-                </div>
-                <div class="w20">
-                    <div class="celResult flex"></div>
-                </div>
-                <div class="w20">
-                    <div class="celResult flex"></div>
-                </div>
-            </div>
-            <div class="rowResult w100 flex wrap">
-                <div class="w20">
-                    <div class="celResult flex"></div>
-                </div>
-                <div class="w20">
-                    <div class="celResult flex"></div>
-                </div>
-                <div class="w20">
-                    <div class="celResult flex"></div>
-                </div>
-                <div class="w20">
-                    <div class="celResult flex"></div>
-                </div>
-                <div class="w20">
-                    <div class="celResult flex"></div>
-                </div>
-            </div> -->
+        <!-- Filas de resultados creadas dinámicamente con JS-->
       </section>
     </main>
     <script>
@@ -218,17 +190,16 @@
       let intentosUsuario = 0;
 
       generarCodigoSecreto();
-
+     
       //Recogemos el botón de comprobar para gestionar los eventos.
       const botonComprobar = document.getElementById("check");
-      
+
       /*
        * Se encarga de llamar a los procesos siguientes;  mostrar la fila con el número introducido; actualizar el mensaje de la sección de info. ç
        * En función de si el usuario gana, pierde, o va por un intento completo.
        * Asociada al evento click del botón de comprobar.
        */
       function comprobarIntento() {
-
         //Objeto literal para personalizar los mensajes de info en función de la iteración actual.
         const mensajes = {
           1: "segundo",
@@ -242,35 +213,37 @@
 
         intentosUsuario = comprobar(codigo, intentosUsuario);
 
-        if (intentosUsuario === -1) { // El usuario ha acertado el código secreto.
+        if (intentosUsuario === -1) {
+          // El usuario ha acertado el código secreto.
           escribirMensajeSeccionInfo("Enhorabuena, ¡has ganado!");
           mostrarCodigo();
-          this.removeEventListener("click", comprobarIntento) //Borramos el evento click asociado , ya que no tiene sentido comprobar el número si el usuario gana.
-          document.getElementById("numero").disabled = "true"
-        } else if (intentosUsuario === maxIntento) { //El usuario ha gastado todos los intentos para adivinar el número.
+          this.removeEventListener("click", comprobarIntento); //Borramos el evento click asociado , ya que no tiene sentido comprobar el número si el usuario gana.
+          document.getElementById("numero").disabled = true; //Deshabilitamos que el usuario pueda escribir otro número.
+          document.getElementById("numero").value = "";
+        } else if (intentosUsuario === maxIntento) {
+          //El usuario ha gastado todos los intentos para adivinar el número.
           escribirMensajeSeccionInfo("Vaya, has perdido...");
           mostrarCodigo();
-          this.removeEventListener("click", comprobarIntento) //Borramos el evento click asociado , ya que no tiene sentido comprobar el número si el usuario ha perdido la partida.
-        } else if (intentosUsuario >= 0 && intentosUsuario < maxIntento) { //El usuario todavía no ha acertado el número.
+          this.removeEventListener("click", comprobarIntento); //Borramos el evento click asociado , ya que no tiene sentido comprobar el número si el usuario ha perdido la partida.
+          document.getElementById("numero").disabled = true;
+          //Deshabilitamos que el usuario pueda escribir otro número.
+          document.getElementById("numero").value = "";
+        } else if (intentosUsuario >= 0 && intentosUsuario < maxIntento) {
+          //El usuario todavía no ha acertado el número.
           escribirMensajeSeccionInfo(`Vas por el ${mensajes[intentosUsuario]} intento.`);
-        } 
+        }
       }
 
       botonComprobar.addEventListener("click", comprobarIntento);
 
       /*
        * Genera una constante CODIGO_SECRETO de tipo array de 5 número aleatorios entre 0 y 9 usando la libreria Math.random();
-       * El código secreto no tiene dígitos repetidos.
+       * El código secreto puede tener dígitos repetidos.
        */
       function generarCodigoSecreto() {
         let numeroGenerado;
-
         for (let i = 0; i < numeroCeldas; i++) {
           numeroGenerado = Math.floor(Math.random() * 10);
-          //Mientras el digito esté en el código lo seguimos generando hasta que no esté.
-          while (codigo.includes(numeroGenerado)) {
-            numeroGenerado = Math.floor(Math.random() * 10);
-          }
           codigo[i] = numeroGenerado;
         }
 
@@ -282,14 +255,14 @@
        * @param codigoUsuario - String : Código introducido por el usuario.
        */
       function sanitizeNumber(codigoUsuario) {
-        let codigoUsuarioSan = codigoUsuario
+        let codigoUsuarioSan = codigoUsuario;
         for (let i = 0; i < codigoUsuario.length; i++) {
           if (!/^\d$/.test(codigoUsuario[i])) {
-            codigoUsuarioSan = codigoUsuarioSan.replace(codigoUsuario[i], '0')
+            codigoUsuarioSan = codigoUsuarioSan.replace(codigoUsuario[i], "0");
           }
         }
 
-        return codigoUsuarioSan
+        return codigoUsuarioSan;
       }
 
       /*
@@ -297,46 +270,39 @@
        * @param codigo - Array<Number> : Array con los dígitos del código secreto.
        * @param intentosUsuario - Number : Numero de intentos acomulados que lleva el usuario en la partida.
        * @return - Number : Devolvemos el número del intento que tiene el usuario después de comprobar el número.
-       */  
+       */
       function comprobar(codigo, intentosUsuario) {
-
-
         let codigoUsuarioString = document.getElementById("numero").value.trim();
-    
+
         //Si la longitud del número no es 'numeroCeldas', añadimos 0s si se queda corto o despreciamos los dígitos sobrantes si supera la longitud.
-        if (codigoUsuarioString.length === 0) codigoUsuarioString += "00000"
+        if (codigoUsuarioString.length === 0) codigoUsuarioString += "00000";
         else if (codigoUsuarioString.length < numeroCeldas) {
-          for (let i= codigoUsuarioString.length-1; i < numeroCeldas; i++) codigoUsuarioString += "0"
-        }
-        else if (codigoUsuarioString.length > numeroCeldas) codigoUsuarioString = codigoUsuarioString.substring(0, numeroCeldas)
-        
+          for (let i = codigoUsuarioString.length - 1; i < numeroCeldas; i++)
+            codigoUsuarioString += "0";
+        } else if (codigoUsuarioString.length > numeroCeldas)
+          codigoUsuarioString = codigoUsuarioString.substring(0, numeroCeldas);
+
         //Si el numero contiene carácteres alfabéticos, éstos los sustituimos por un 0s.
-        codigoUsuarioString = sanitizeNumber(codigoUsuarioString)
+        codigoUsuarioString = sanitizeNumber(codigoUsuarioString);
 
         const codigoUsuario = codigoUsuarioString.split("").map((el) => (el = parseInt(el)));
-        
+
         //Creamos la fila con el número introducido.
         crearFilaResultado(intentosUsuario);
 
         //Para rellenar la fila correcta, hemos hecho que el número de fila corresponda al intento actual del usuario.
         const filaIntento = document.getElementById(`f${intentosUsuario}`);
-        const celdasIntento = Array.from(filaIntento.children);
+        const celdasIntento = Array.from(filaIntento.children); //Convertimos a array para iterar más comódamente.
         let aciertos = 0;
 
+        let digitosRestantes = [...codigo] //Copia (deep copy) del código secreto que será útil para comprobar los dígitos.
 
-        //Seleccionamos un color u otro según las reglas del juego.
-        for (let i = 0; i < numeroCeldas; i++) {
-          const celda = celdasIntento[i].children[0];
-          celda.innerText = codigoUsuario[i];
-          if (codigo[i] == codigoUsuario[i]) {
-            celda.classList.add("bg-green");
-            aciertos++;
-          }
-          else if (codigo.includes(codigoUsuario[i])) {
-              celda.classList.add("bg-yellow");
-          }
-        }
+        //Primero pintamos de verde los número que coincidan exactamente.
+        aciertos = pintarCoincidentes(codigo, codigoUsuario, digitosRestantes, celdasIntento, aciertos)
 
+        //Comprobamos de los dígitos que no coincidien cuales están incluidos en el código secreto.
+        pintarNoCoincidentes(codigo, codigoUsuario, digitosRestantes, celdasIntento)
+        
         //Si el usuario no acierta el número, incrementamos los intentos totales jugados.
         if (aciertos < 5) {
           intentosUsuario++;
@@ -348,17 +314,62 @@
       }
 
       /*
+       * Para pintar los dígitos introducidos por el usuario que están en la misma posición que los del código secreto.
+       * @param codigo - Array<Number> : Código secreto.
+       * @param codigoUsuario - Array<Number> : Código introducido por el usuario.
+       * @param digitosRestantes - Array<Number> : Copia del código secreto.
+       * @param celdasIntento - HTMLCollection : Celdas de la fila concreta.
+       * @param aciertos - Number : Número de aciertos del usuario. 
+       * @return Number : Número de aciertos actualizado (después de comprobar dígitos).
+       */
+      function pintarCoincidentes(codigo, codigoUsuario, digitosRestantes, celdasIntento, aciertos) {
+        for (let i = 0; i < numeroCeldas; i++) {
+          const celda = celdasIntento[i].children[0];
+          celda.innerText = codigoUsuario[i]; //Aprovechamos también para pintar los dígitos en los resultados.
+          if (codigo[i] === codigoUsuario[i]) {
+            const index = digitosRestantes.indexOf(codigoUsuario[i])
+            digitosRestantes.splice(index, 1);
+            celda.classList.add("bg-green");
+            aciertos++; // Si acierta el dígito, lo contabilizamos.
+          } 
+          else {
+            celda.classList.add("bg-gray");
+          }
+        }
+        return aciertos;
+      }
+
+      /*
+       * Para pintar los dígitos introducidos por el usuario que están en la misma posición que los del código secreto.
+       * @param codigo - Array<Number> : Código secreto.
+       * @param codigoUsuario - Array<Number> : Código introducido por el usuario.
+       * @param digitosRestantes - Array<Number> : Copia del código secreto.
+       * @param celdasIntento - HTMLCollection : Celdas de la fila concreta.
+       */
+      function pintarNoCoincidentes(codigo, codigoUsuario, digitosRestantes, celdasIntento) {
+        for (let i = 0; i < numeroCeldas; i++) {
+          if (digitosRestantes.includes(codigoUsuario[i]) && codigoUsuario[i] !== codigo[i]) {
+            const celda = celdasIntento[i].children[0];
+            const index = digitosRestantes.indexOf(codigoUsuario[i])
+            digitosRestantes.splice(index, 1);
+            celda.classList.remove("bg-gray")
+            celda.classList.add("bg-yellow");
+          }
+        }
+      }
+
+      /*
        * Rellena la sección de información con un mensaje concreto en función del estado de la partida.
-       * @param mensaje - String : Texto que se mostrará en la sección de info. 
-       */  
+       * @param mensaje - String : Texto que se mostrará en la sección de info.
+       */
       function escribirMensajeSeccionInfo(mensaje) {
         const parrafoInfo = document.getElementById("info");
         parrafoInfo.textContent = mensaje;
       }
 
-       /*
-        * Enseña el número generado que tenía que acertar el usuario en la sección de código.
-        */  
+      /*
+       * Enseña el número generado que tenía que acertar el usuario en la sección de código.
+       */
       function mostrarCodigo() {
         const filaCodigo = document.querySelector("#codigo > div");
         const celdasCodigo = Array.from(filaCodigo.children);
@@ -398,32 +409,51 @@
 
       //Creamos el evento al botón de reinicio para poder volver al estado inicial del juego.
       botonReinicio.addEventListener("click", (e) => {
-
         //Restauramos el evento asociado al botón de comprobar número.
         botonComprobar.addEventListener("click", comprobarIntento);
 
-        //Eliminamos los filas de resultados 
-        const seccionResultados = document.getElementById("Result")
+        //Eliminamos los filas de resultados
+        const seccionResultados = document.getElementById("Result");
+        eliminarFilas(seccionResultados)
+
+        //Limpiamos la fila del código secreto (ocultar el código con '*').
+        const filaCodigo = document.getElementById("codigo").children[0];
+        resetearCodigo(filaCodigo)
         
+        //Reiniciamos intentos del jugador y generamos otra vez el código secreto.
+        intentosUsuario = 0;
+
+        //Mostramos el mensaje de info inicial.
+        escribirMensajeSeccionInfo("Primer intento, suerte!");
+
+        //Habilitamos que de nuevo se pueda escribir un número en el input.
+        const numeroInput = document.getElementById("numero");
+        numeroInput.disabled = false;
+        numeroInput.value = "";
+      });
+
+      /*
+       * Se encarga de limpiar el código secreto antiguo y de generar uno nuevo. 
+       * @param filaCodigo - HTMLElement : Objeto que representa las celdas de los dígitos del código secreto. 
+       */
+      
+      function resetearCodigo(filaCodigo) {
+        for (celdaWrapper of filaCodigo.children) {
+          let celdaCodigo = celdaWrapper.children[0];
+          celdaCodigo.innerText = "*";
+        }
+        generarCodigoSecreto();
+      }
+
+      /*
+       * Se encarga de eliminar las filas dentro de la sección de resultados. 
+       * @param seccionResultados - HTMLElement : Objeto que representa la sección de resultados. 
+       */
+      function eliminarFilas(seccionResultados) {
         while (seccionResultados.firstChild) {
           seccionResultados.removeChild(seccionResultados.lastChild);
         }
-        
-        //Limpiamos la fila del código secreto (ocultar el código con '*').
-        const filaCodigo = document.getElementById("codigo").children[0]
-       
-        for (celdaWrapper of filaCodigo.children) {
-          let celdaCodigo = celdaWrapper.children[0]
-          celdaCodigo.innerText = "*"
-        }
-
-        //Reiniciamos intentos del jugador y generamos otra vez el código secreto.
-        intentosUsuario = 0;
-        generarCodigoSecreto();
-
-        //Mostramos el mensaje de info inicial
-        escribirMensajeSeccionInfo("Primer intento, suerte!")
-      })
+      }
 
     </script>
   </body>
